@@ -7,6 +7,7 @@ import coinflipImage from '../img/games/coinflip.jpg'
 import Raffle from './Raffle';
 
 const Home = ({loading}) => {
+
     return (
         <div className="flex justify-center">
             <div className="px-5 container mb-3">

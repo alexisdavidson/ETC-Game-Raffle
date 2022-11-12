@@ -45,3 +45,13 @@ body {
 .card-text {
   font-size: 1.2rem;
 }
+
+.slot {
+  width: 100%;
+}
+
+.slotTaken {
+  font-size: 0.8rem;
+  background-color: gray;
+  border-color: gray;
+}
