@@ -15,11 +15,17 @@ const Home = ({loading}) => {
             </div>
             <div className="px-5 container">
             {!loading ? (
-                <Row xs={1} md={2} lg={4} className="g-4 pb-5 pt-3">
-                    <Raffle id={0} name={"20M"}/>
-                    <Raffle id={1} name={"50M"}/>
-                    <Raffle id={2} name={"200M"}/>
-                </Row>
+                <>
+                    <Row xs={1} md={2} lg={4} className="g-4 pb-5 pt-3">
+                        <Raffle id={0} name={"20M"}/>
+                        <Raffle id={1} name={"50M"}/>
+                        <Raffle id={2} name={"200M"}/>
+                    </Row>
+                    <Row className="mb-5">
+                        <Col>Total Payouts: 20,541,654 ACE</Col>
+                        <Col>Total Burn: 789,123 ACE</Col>
+                    </Row>
+                </>
             ) : (
                 <div>Loading...</div>
             )}
