@@ -4,76 +4,25 @@ import { Row, Col, Card, Button } from 'react-bootstrap'
 import { useNavigate } from "react-router-dom";
 import configContract from './configContract';
 import coinflipImage from '../img/games/coinflip.jpg'
+import Raffle from './Raffle';
 
-const Home = () => {
-    const [loading, setLoading] = useState(true)
-    const [items, setItems] = useState([])
-    let navigate = useNavigate(); 
-
-    const createItems = () => {
-        let item = {
-            name: "Coin Flip",
-            description: "Double your coins!",
-            image: coinflipImage,
-            path: "/coinflip"
-        }
-
-        if (items.length == 0) {
-            items.push(item)
-        }
-
-        setLoading(false)
-    }
-
-    const play = (item) => {
-        navigate(item.path);
-    }
-
-    useEffect(() => {
-        createItems()
-    }, [])
-
-    if (loading) return (
-        <main style={{ padding: "1rem 0" }}>
-        <h2>Loading...</h2>
-        </main>
-    )
-
+const Home = ({loading}) => {
     return (
         <div className="flex justify-center">
-            <div className="px-5 container">
+            <div className="px-5 container mb-3">
+                The Winner of a raffle is determined as soon as all slots are sold out.
             </div>
-
-            {items.length > 0 ?
-                <div className="px-5 container">
-                    <Row xs={1} md={2} lg={4} className="g-4 py-5">
-                        {items.map((item, idx) => (
-                            <Col key={idx} className="overflow-hidden">
-                                <Card bg="dark">
-                                    <Card.Img variant="top" src={item.image} />
-                                    <Card.Body>
-                                        <Card.Title>{item.name}</Card.Title>
-                                        <Card.Text>
-                                            {item.description}
-                                        </Card.Text>
-                                    </Card.Body>
-                                    <Card.Footer>
-                                        <div className='d-grid'>
-                                            <Button onClick={() => play(item)} variant="primary" size="lg">
-                                                Play
-                                            </Button>
-                                        </div>
-                                    </Card.Footer>
-                                </Card>
-                            </Col>
-                        ))}
-                    </Row>
-                </div>
-            : (
-                <main style={{ padding: "1rem 0" }}>
-                    <h2>No listed games</h2>
-                </main>
+            <div className="px-5 container">
+            {!loading ? (
+                <Row xs={1} md={2} lg={4} className="g-4 pb-5 pt-3">
+                    <Raffle id={0} name={"20M"}/>
+                    <Raffle id={1} name={"50M"}/>
+                    <Raffle id={2} name={"200M"}/>
+                </Row>
+            ) : (
+                <div>Loading...</div>
             )}
+            </div>
         </div>
     );
 }
