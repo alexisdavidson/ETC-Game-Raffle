@@ -8,26 +8,14 @@ module.exports = {
   solidity: "0.8.4",
   networks: {
      hardhat: {},
-     ropsten: {
-        url: REACT_APP_API_URL,
-        accounts: [`0x${REACT_APP_PRIVATE_KEY}`]
-     },
-     rinkeby: {
-       url: process.env.REACT_APP_API_URL_RINKEBY,
-       accounts: ['0x' + process.env.REACT_APP_PRIVATE_KEY_RINKEBY]
-     },
      goerli: {
-       url: process.env.REACT_APP_API_URL_GOERLI,
+       url: process.env.REACT_APP_API_URL_GOERLI_INFURA,
        accounts: ['0x' + process.env.REACT_APP_PRIVATE_KEY_GOERLI]
      },
-     matic: {
-       url: process.env.REACT_APP_API_URL_MATIC,
-       accounts: ['0x' + process.env.REACT_APP_PRIVATE_KEY_MATIC]
+     etc: {
+       url: process.env.REACT_APP_API_URL_ETC,
+       accounts: ['0x' + process.env.REACT_APP_PRIVATE_KEY_ETC]
      },
-     mumbai: {
-       url: process.env.REACT_APP_API_URL_MUMBAI,
-       accounts: ['0x' + process.env.REACT_APP_PRIVATE_KEY_MUMBAI]
-     }
   },
   paths: {
     artifacts: "./src/backend/artifacts",
