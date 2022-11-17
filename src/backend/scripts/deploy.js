@@ -9,8 +9,9 @@ async function main() {
   const TokenTest = await ethers.getContractFactory("TokenTest");
   const tokenTest = await TokenTest.deploy();
   console.log("TokenTest contract address", tokenTest.address)
+  saveFrontendFiles(tokenTest, "TokenTest");
   return
-  
+
   const Token = await ethers.getContractFactory("Token");
   const token = await Token.deploy();
   console.log("Token contract address", token.address)

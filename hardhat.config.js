@@ -1,6 +1,7 @@
 require("@nomiclabs/hardhat-waffle");
 require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
+require("@ericxstone/hardhat-blockscout-verify");
 require("dotenv").config();
 const { REACT_APP_API_URL, REACT_APP_PRIVATE_KEY } = process.env;
 
@@ -24,7 +25,28 @@ module.exports = {
     tests: "./src/backend/test"
   },
   etherscan: {
-    apiKey: process.env.REACT_APP_ETHERSCAN_API_KEY
+    apiKey: process.env.REACT_APP_ETHERSCAN_API_KEY,
     // apiKey: process.env.REACT_APP_POLYGONSCAN_API_KEY
-  }
+    customChains: [
+      {
+        network: "etc",
+        chainId: 61,
+        urls: {
+          apiURL: "https://blockscout.com/etc/mainnet/api",
+          browserURL: "https://blockscout.com/etc/mainnet/"
+        }
+      }
+    ]
+  },
+  // blockscoutVerify: {
+  //   blockscoutURL: "<BLOCKSCOUT_EXPLORER_URL>",
+  //   contracts: {
+  //     "<CONTRACT_NAME>": {
+  //       compilerVersion: SOLIDITY_VERSION.<CONTRACT_COMPILER_VERSION>, // checkout enum SOLIDITY_VERSION
+  //       optimization: true,
+  //       evmVersion: EVM_VERSION.<EVM_VERSION>, // checkout enum SOLIDITY_VERSION
+  //       optimizationRuns: 999999,
+  //     }
+  //   }
+  // }
 };
