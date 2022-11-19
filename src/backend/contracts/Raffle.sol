@@ -10,7 +10,7 @@ contract Raffle is Ownable, ReentrancyGuard {
 
     address teamWallet;
     address[11] participants;
-    uint256 poolPrize;
+    uint256 entryPrice;
     bool ended;
     uint256 totalBurned;
     uint256 totalPayout;
@@ -24,8 +24,8 @@ contract Raffle is Ownable, ReentrancyGuard {
     event SlotLeft(address user, uint256 slot);
     event RaffleFilled();
 
-    constructor(address _tokenAddress, uint256 _poolPrize, address _teamWallet) {
-        poolPrize = _poolPrize;
+    constructor(address _tokenAddress, uint256 _entryPrice, address _teamWallet) {
+        entryPrice = _entryPrice;
         token = ERC20(_tokenAddress);
         teamWallet = _teamWallet;
     }
@@ -33,7 +33,7 @@ contract Raffle is Ownable, ReentrancyGuard {
     function play(uint256 _slot) public payable nonReentrant {
         require(_slot < 11, "Can only enter a slot from 0 to 11");
         require(participants[_slot] == address(0), "This slot is not free");
-        require(msg.value >= amountToParticipate(), "Not enough ETC sent");
+        require(msg.value >= entryPrice, "Not enough ETC sent");
 
         participants[_slot] = msg.sender;
         participantsCount += 1;
@@ -53,7 +53,7 @@ contract Raffle is Ownable, ReentrancyGuard {
         participants[_slot] = address(0);
         participantsCount -= 1;
 
-        token.transfer(msg.sender, amountToParticipate());
+        token.transfer(msg.sender, entryPrice);
 
         emit SlotLeft(msg.sender, _slot);
     }
@@ -67,17 +67,17 @@ contract Raffle is Ownable, ReentrancyGuard {
 
         lastWinner = participants[_winnerIndex];
         // Give 10x entries to winner
-        token.transfer(msg.sender, poolPrize);
+        token.transfer(msg.sender, entryPrice * 10);
 
         // 11th entry will go to
-        uint256 _amountToBurn = amountToParticipate() * percentToBurn / 100;
-        uint256 _amountToTeam = amountToParticipate() * percentToTeam / 100;
+        uint256 _amountToBurn = entryPrice * percentToBurn / 100;
+        uint256 _amountToTeam = entryPrice * percentToTeam / 100;
         
         token.transfer(address(0x000000000000000000000000000000000000dEaD), _amountToBurn);
         token.transfer(teamWallet, _amountToTeam);
 
         totalBurned += _amountToBurn;
-        totalPayout += poolPrize;
+        totalPayout += entryPrice * 10;
 
         // Clear participants list address(0)
         for (uint256 i = 0; i < 11;) {
@@ -95,12 +95,8 @@ contract Raffle is Ownable, ReentrancyGuard {
         percentToTeam = _percent;
     }
 
-    function setPoolPrize(uint256 _poolPrize) public onlyOwner {
-        poolPrize = _poolPrize;
-    }
-
-    function amountToParticipate() public view returns(uint256) {
-        return poolPrize / 10;
+    function setEntryPrice(uint256 _entryPrice) public onlyOwner {
+        entryPrice = _entryPrice;
     }
     
     function withdraw() public onlyOwner {
