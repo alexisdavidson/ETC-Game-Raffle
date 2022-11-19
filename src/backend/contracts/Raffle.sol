@@ -6,19 +6,19 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract Raffle is Ownable, ReentrancyGuard {
-    ERC20 token; // Apecoin Classic ETC, ACE 0xdA616532A458bC5B965B89D7d4cb50C7B9E30347
+    ERC20 private token; // Apecoin Classic ETC, ACE 0xdA616532A458bC5B965B89D7d4cb50C7B9E30347
 
-    address teamWallet;
-    address[11] participants;
-    uint256 entryPrice;
-    bool ended;
-    uint256 totalBurned;
-    uint256 totalPayout;
-    address lastWinner;
-    uint256 participantsCount;
+    address[11] public participants;
+    uint256 public entryPrice;
+    bool public ended;
+    uint256 public totalBurned;
+    uint256 public totalPayout;
+    address public lastWinner;
+    uint256 public participantsCount;
 
-    uint256 percentToBurn = 30;
-    uint256 percentToTeam = 70;
+    uint256 private percentToBurn = 30;
+    uint256 private percentToTeam = 70;
+    address private teamWallet;
     
     event SlotEntered(address user, uint256 slot);
     event SlotLeft(address user, uint256 slot);
