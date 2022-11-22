@@ -30,10 +30,12 @@ contract Raffle is Ownable, ReentrancyGuard {
         teamWallet = _teamWallet;
     }
 
-    function play(uint256 _slot) public payable nonReentrant {
-        require(_slot < 11, "Can only enter a slot from 0 to 11");
+    function play(uint256 _slot) public nonReentrant {
+        require(_slot < 11, "Can only enter a slot from 0 to 10");
         require(participants[_slot] == address(0), "This slot is not free");
-        require(msg.value >= entryPrice, "Not enough ETC sent");
+        
+        // Pay tokens
+        token.transferFrom(msg.sender, address(this), entryPrice);
 
         participants[_slot] = msg.sender;
         participantsCount += 1;
