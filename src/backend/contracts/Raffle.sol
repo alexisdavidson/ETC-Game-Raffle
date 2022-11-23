@@ -69,11 +69,11 @@ contract Raffle is Ownable, ReentrancyGuard {
 
         lastWinner = participants[_winnerIndex];
         // Give 10x entries to winner
-        token.transfer(msg.sender, entryPrice * 10);
+        token.transfer(lastWinner, entryPrice * 10);
 
         // 11th entry will go to
-        uint256 _amountToBurn = entryPrice * percentToBurn / 100;
-        uint256 _amountToTeam = entryPrice * percentToTeam / 100;
+        uint256 _amountToBurn = (entryPrice * percentToBurn) / 100;
+        uint256 _amountToTeam = (entryPrice * percentToTeam) / 100;
         
         token.transfer(address(0x000000000000000000000000000000000000dEaD), _amountToBurn);
         token.transfer(teamWallet, _amountToTeam);
