@@ -14,7 +14,7 @@ describe("Raffle", async function() {
     let percentToTeam = 70;
 
     let firstRandomNumber = 23423678
-    let provenance = "0x976399f333f4954e06590c146be3c89b90a4d4c10dd68370a2b0acf83358589b"
+    let provenance = buf2hex(keccak256(firstRandomNumber))
 
     beforeEach(async function() {
         // Get contract factories
@@ -81,8 +81,12 @@ describe("Raffle", async function() {
             expect(fromWei(await token.balanceOf(addr1.address))).to.equal(playerInitialBalance1 - (entryPrice1 * 8));
             expect(fromWei(await token.balanceOf(addr2.address))).to.equal(playerInitialBalance2 - (entryPrice1 * 3));
 
-            // End Raffle called externally
-            await raffle.connect(deployer).endRaffle(firstRandomNumber, "nextProvenanceHash");
+            // Code snippet from server
+            {
+                let nextRandomNumber = Math.random() // Write to DB
+                let nextProvenanceHash = buf2hex(keccak256(nextRandomNumber))
+                await raffle.connect(deployer).endRaffle(firstRandomNumber, nextProvenanceHash); // Read firstRandomNumber from DB
+            }
             
             // Provenance verification
             expect(buf2hex(keccak256(parseInt(await raffle.lastRandomNumber())))).to.equal(await raffle.lastProvenance())
