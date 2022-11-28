@@ -1,7 +1,10 @@
 const { expect } = require("chai")
+const keccak256 = require("keccak256")
 
 const toWei = (num) => ethers.utils.parseEther(num.toString())
 const fromWei = (num) => parseInt(ethers.utils.formatEther(num))
+
+const buf2hex = x => '0x' + x.toString('hex')
 
 describe("Raffle", async function() {
     let deployer, addr1, addr2, token, raffle
@@ -9,6 +12,9 @@ describe("Raffle", async function() {
     let initialTokenSupply = 10_000_000_000;
     let percentToBurn = 30;
     let percentToTeam = 70;
+
+    let firstRandomNumber = 23423678
+    let provenance = "0x976399f333f4954e06590c146be3c89b90a4d4c10dd68370a2b0acf83358589b"
 
     beforeEach(async function() {
         // Get contract factories
@@ -20,7 +26,7 @@ describe("Raffle", async function() {
 
         // Deploy contracts
         token = await Token.deploy(initialTokenSupply);
-        raffle = await Raffle.deploy(token.address, toWei(entryPrice1), deployer.address);
+        raffle = await Raffle.deploy(token.address, toWei(entryPrice1), deployer.address, provenance);
     });
 
     describe("Deployment", function() {
@@ -76,7 +82,11 @@ describe("Raffle", async function() {
             expect(fromWei(await token.balanceOf(addr2.address))).to.equal(playerInitialBalance2 - (entryPrice1 * 3));
 
             // End Raffle called externally
-            await raffle.connect(deployer).endRaffle(3);
+            await raffle.connect(deployer).endRaffle(firstRandomNumber, "nextProvenanceHash");
+            
+            // Provenance verification
+            expect(buf2hex(keccak256(parseInt(await raffle.lastRandomNumber())))).to.equal(await raffle.lastProvenance())
+            
             expect(fromWei(await token.balanceOf(raffle.address))).to.equal(0);
             expect(fromWei(await token.balanceOf(addr2.address))).to.equal(entryPrice1 * 10);
             deployerBalance += (entryPrice1 * percentToTeam) / 100

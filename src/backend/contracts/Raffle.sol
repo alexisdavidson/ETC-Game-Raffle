@@ -19,15 +19,23 @@ contract Raffle is Ownable, ReentrancyGuard {
     uint256 private percentToBurn = 30;
     uint256 private percentToTeam = 70;
     address private teamWallet;
+
+    // Server generates random number, then compute sha256(number) and saves it here publicly
+    // When the number is reavealed (after the game ends), users can verify the correctness of this provenance 
+    // by computing sha256(number) themselves
+    uint256 public lastRandomNumber;
+    string public lastProvenance;
+    string public nextProvenance;
     
     event SlotEntered(address user, uint256 slot);
     event SlotLeft(address user, uint256 slot);
     event RaffleFilled();
 
-    constructor(address _tokenAddress, uint256 _entryPrice, address _teamWallet) {
+    constructor(address _tokenAddress, uint256 _entryPrice, address _teamWallet, string memory _provenance) {
         entryPrice = _entryPrice;
         token = ERC20(_tokenAddress);
         teamWallet = _teamWallet;
+        nextProvenance = _provenance;
     }
 
     function play(uint256 _slot) public nonReentrant {
@@ -43,8 +51,7 @@ contract Raffle is Ownable, ReentrancyGuard {
         emit SlotEntered(msg.sender, _slot);
 
         if (participantsCount >= 11) {
-            // Todo: Draw winner
-            emit RaffleFilled();
+            emit RaffleFilled(); // Frontend lListen to this event and call API to draw winner
         }
     }
 
@@ -60,11 +67,13 @@ contract Raffle is Ownable, ReentrancyGuard {
         emit SlotLeft(msg.sender, _slot);
     }
 
-    // This function is called from our centralized server 
-    // which will provide a random number
-    // The authenticity of the random number can be verified
-    // through provenance hash
-    function endRaffle(uint256 _winnerIndex) public onlyOwner {
+    // This function is called from our centralized server which will provide a random number
+    // The authenticity of the random number can be verified through provenance hash
+    function endRaffle(uint256 _randomNumber, string memory _provenance) public onlyOwner {
+        lastProvenance = nextProvenance;
+        nextProvenance = _provenance;
+        lastRandomNumber = _randomNumber;
+        uint256 _winnerIndex = _randomNumber % 11;
         ended = true;
 
         lastWinner = participants[_winnerIndex];
