@@ -10,7 +10,6 @@ contract Raffle is Ownable, ReentrancyGuard {
 
     address[11] public participants;
     uint256 public entryPrice;
-    bool public ended;
     uint256 public totalBurned;
     uint256 public totalPayout;
     address public lastWinner;
@@ -74,7 +73,6 @@ contract Raffle is Ownable, ReentrancyGuard {
         nextProvenance = _provenance;
         lastRandomNumber = _randomNumber;
         uint256 _winnerIndex = _randomNumber % 11;
-        ended = true;
 
         lastWinner = participants[_winnerIndex];
         // Give 10x entries to winner
