@@ -14,6 +14,9 @@ async function main() {
   let entryPrice = 20_000_000;
   let firstRandomNumber = 23423678
   let provenance = buf2hex(keccak256(firstRandomNumber))
+  // console.log(provenance)
+  // console.log(toWei(entryPrice))
+  // return
 
   const TokenTest = await ethers.getContractFactory("Token");
   const Raffle = await ethers.getContractFactory("Raffle");

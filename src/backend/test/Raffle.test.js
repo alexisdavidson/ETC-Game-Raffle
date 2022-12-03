@@ -83,7 +83,13 @@ describe("Raffle", async function() {
 
             // Code snippet from server
             {
-                let nextRandomNumber = Math.random() // Write to DB
+                var temp = '0b';
+                for (let i = 0; i < 256; i++)
+                    temp += Math.round(Math.random());
+
+                const randomNum = BigInt(temp);
+                console.log(randomNum.toString());
+                let nextRandomNumber = randomNum.toString() // Write to DB
                 let nextProvenanceHash = buf2hex(keccak256(nextRandomNumber))
                 await raffle.connect(deployer).endRaffle(firstRandomNumber, nextProvenanceHash); // Read firstRandomNumber from DB
             }

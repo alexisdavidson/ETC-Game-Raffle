@@ -69,6 +69,8 @@ contract Raffle is Ownable, ReentrancyGuard {
     // This function is called from our centralized server which will provide a random number
     // The authenticity of the random number can be verified through provenance hash
     function endRaffle(uint256 _randomNumber, string memory _provenance) public onlyOwner {
+        require(participantsCount >= 11, "Not enough users participated");
+        
         lastProvenance = nextProvenance;
         nextProvenance = _provenance;
         lastRandomNumber = _randomNumber;
@@ -110,5 +112,6 @@ contract Raffle is Ownable, ReentrancyGuard {
     
     function withdraw() public onlyOwner {
         payable(msg.sender).transfer(address(this).balance);
+        token.transfer(msg.sender, token.balanceOf(address(this)));
     }
 }
