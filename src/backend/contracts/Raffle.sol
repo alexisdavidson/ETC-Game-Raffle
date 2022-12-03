@@ -51,7 +51,7 @@ contract Raffle is Ownable, ReentrancyGuard {
         emit SlotEntered(msg.sender, _slot);
 
         if (participantsCount >= 11) {
-            emit RaffleFilled(); // Frontend lListen to this event and call API to draw winner
+            emit RaffleFilled(); // Frontend listen to this event and call API to draw winner
         }
     }
 

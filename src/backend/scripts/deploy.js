@@ -1,3 +1,9 @@
+const keccak256 = require("keccak256")
+const buf2hex = x => '0x' + x.toString('hex')
+
+const toWei = (num) => ethers.utils.parseEther(num.toString())
+const fromWei = (num) => parseInt(ethers.utils.formatEther(num))
+
 async function main() {
 
   const [deployer] = await ethers.getSigners();
@@ -5,11 +11,20 @@ async function main() {
   console.log("Deploying contracts with the account:", deployer.address);
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
+  let entryPrice = 20_000_000;
+  let firstRandomNumber = 23423678
+  let provenance = buf2hex(keccak256(firstRandomNumber))
+
+  const TokenTest = await ethers.getContractFactory("Token");
+  const Raffle = await ethers.getContractFactory("Raffle");
+  const tokenTest = await TokenTest.deploy(10_000_000_000);
+  const raffle = await Raffle.deploy(tokenTest.address, toWei(entryPrice), deployer.address, provenance);
   
-  const TokenTest = await ethers.getContractFactory("TokenTest");
-  const tokenTest = await TokenTest.deploy();
+  console.log("Raffle contract address", raffle.address)
+  saveFrontendFiles(raffle, "Raffle");
+
   console.log("TokenTest contract address", tokenTest.address)
-  saveFrontendFiles(tokenTest, "TokenTest");
+  saveFrontendFiles(tokenTest, "Token");
   return
 
   const Token = await ethers.getContractFactory("Token");
