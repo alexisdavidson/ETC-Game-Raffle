@@ -52,8 +52,13 @@ describe("Raffle", async function() {
             expect(fromWei(await token.allowance(addr1.address, raffle.address))).to.equal(initialTokenSupply);
 
             await raffle.connect(addr1).play(0);
+            expect(await raffle.participantsCount()).to.equal(1);
+            let expectedParticipantsArray = [addr1.address, "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000"]
+            expect(await raffle.getParticipants()).to.deep.equal(expectedParticipantsArray);
             await expect(raffle.connect(addr1).play(0)).to.be.revertedWith('This slot is not free');
             await raffle.connect(addr1).play(1);
+            expectedParticipantsArray[1] = addr1.address
+            expect(await raffle.getParticipants()).to.deep.equal(expectedParticipantsArray);
             expect(await raffle.participantsCount()).to.equal(2);
 
             

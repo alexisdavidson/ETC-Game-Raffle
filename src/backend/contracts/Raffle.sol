@@ -109,6 +109,10 @@ contract Raffle is Ownable, ReentrancyGuard {
     function setEntryPrice(uint256 _entryPrice) public onlyOwner {
         entryPrice = _entryPrice;
     }
+
+    function getParticipants() public view returns(address[11] memory){
+        return participants;
+    }
     
     function withdraw() public onlyOwner {
         payable(msg.sender).transfer(address(this).balance);
