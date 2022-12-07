@@ -6,9 +6,9 @@ const fromWei = (num) => parseInt(ethers.utils.formatEther(num))
 
 const buf2hex = x => '0x' + x.toString('hex')
 
-const random256Number = () => {
+const random16Number = () => {
     var temp = '0b';
-    for (let i = 0; i < 256; i++)
+    for (let i = 0; i < 16; i++)
         temp += Math.round(Math.random());
 
     const randomNum = BigInt(temp);
@@ -23,7 +23,7 @@ describe("Raffle", async function() {
     let percentToBurn = 30;
     let percentToTeam = 70;
 
-    let firstRandomNumber = 23423678
+    let firstRandomNumber = 23444
     let provenance = buf2hex(keccak256(firstRandomNumber))
 
     beforeEach(async function() {
@@ -99,11 +99,16 @@ describe("Raffle", async function() {
 
             // Code snippet from server
                 let previousRandomNumber = firstRandomNumber // Read firstRandomNumber from DB
-                let nextRandomNumber = random256Number() // Write to DB
+                let nextRandomNumber = random16Number() // Write to DB
                 let nextProvenanceHash = buf2hex(keccak256(parseInt(nextRandomNumber)))
                 console.log("nextProvenanceHash: " + nextProvenanceHash)
                 await raffle.connect(deployer).endRaffle(previousRandomNumber, nextProvenanceHash);
             
+            let lastRandomNumber = await raffle.lastRandomNumber()
+            let lastWinner = lastRandomNumber % 11
+            console.log("lastRandomNumber: " + lastRandomNumber)
+            console.log("lastWinner: " + lastWinner)
+
             // Provenance verification
             expect(buf2hex(keccak256(parseInt(await raffle.lastRandomNumber())))).to.equal(await raffle.lastProvenance())
             
@@ -127,17 +132,18 @@ describe("Raffle", async function() {
 
             let addr1PreviousBalance = fromWei(await token.balanceOf(addr1.address))
             let addr2PreviousBalance = fromWei(await token.balanceOf(addr2.address))
-            
+
             // Code snippet from server
                 previousRandomNumber = nextRandomNumber // Read firstRandomNumber from DB
-                nextRandomNumber = random256Number() // Write to DB
+                nextRandomNumber = random16Number() // Write to DB
                 nextProvenanceHash = buf2hex(keccak256(parseInt(nextRandomNumber)))
                 await raffle.connect(deployer).endRaffle(previousRandomNumber, nextProvenanceHash);
 
-            const lastRandomNumber = await raffle.lastRandomNumber()
-            const lastWinner = lastRandomNumber % 11
+            lastRandomNumber = await raffle.lastRandomNumber()
+            lastWinner = lastRandomNumber % 11
             console.log("lastRandomNumber: " + lastRandomNumber)
             console.log("lastWinner: " + lastWinner)
+            
             // Provenance verification
             expect(buf2hex(keccak256(parseInt(lastRandomNumber)))).to.equal(await raffle.lastProvenance())
 
