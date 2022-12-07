@@ -24,7 +24,7 @@ describe("Raffle", async function() {
     let percentToTeam = 70;
 
     let firstRandomNumber = 23444
-    let provenance = buf2hex(keccak256(firstRandomNumber))
+    let provenance = buf2hex(keccak256(parseInt(firstRandomNumber)))
 
     beforeEach(async function() {
         // Get contract factories
