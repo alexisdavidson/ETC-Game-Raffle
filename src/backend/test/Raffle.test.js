@@ -6,6 +6,16 @@ const fromWei = (num) => parseInt(ethers.utils.formatEther(num))
 
 const buf2hex = x => '0x' + x.toString('hex')
 
+const random256Number = () => {
+    var temp = '0b';
+    for (let i = 0; i < 256; i++)
+        temp += Math.round(Math.random());
+
+    const randomNum = BigInt(temp);
+    console.log(randomNum.toString());
+    return randomNum.toString()
+}
+
 describe("Raffle", async function() {
     let deployer, addr1, addr2, token, raffle
     let entryPrice1 = 20_000_000;
@@ -51,6 +61,7 @@ describe("Raffle", async function() {
             await token.connect(addr2).approve(raffle.address, toWei(initialTokenSupply))
             expect(fromWei(await token.allowance(addr1.address, raffle.address))).to.equal(initialTokenSupply);
 
+            // Start of the first round
             await raffle.connect(addr1).play(0);
             expect(await raffle.participantsCount()).to.equal(1);
             let expectedParticipantsArray = [addr1.address, "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000"]
@@ -87,23 +98,56 @@ describe("Raffle", async function() {
             expect(fromWei(await token.balanceOf(addr2.address))).to.equal(playerInitialBalance2 - (entryPrice1 * 3));
 
             // Code snippet from server
-            {
-                var temp = '0b';
-                for (let i = 0; i < 256; i++)
-                    temp += Math.round(Math.random());
-
-                const randomNum = BigInt(temp);
-                console.log(randomNum.toString());
-                let nextRandomNumber = randomNum.toString() // Write to DB
-                let nextProvenanceHash = buf2hex(keccak256(nextRandomNumber))
-                await raffle.connect(deployer).endRaffle(firstRandomNumber, nextProvenanceHash); // Read firstRandomNumber from DB
-            }
+                let previousRandomNumber = firstRandomNumber // Read firstRandomNumber from DB
+                let nextRandomNumber = random256Number() // Write to DB
+                let nextProvenanceHash = buf2hex(keccak256(parseInt(nextRandomNumber)))
+                console.log("nextProvenanceHash: " + nextProvenanceHash)
+                await raffle.connect(deployer).endRaffle(previousRandomNumber, nextProvenanceHash);
             
             // Provenance verification
             expect(buf2hex(keccak256(parseInt(await raffle.lastRandomNumber())))).to.equal(await raffle.lastProvenance())
             
             expect(fromWei(await token.balanceOf(raffle.address))).to.equal(0);
             expect(fromWei(await token.balanceOf(addr2.address))).to.equal(entryPrice1 * 10);
+            deployerBalance += (entryPrice1 * percentToTeam) / 100
+            expect(fromWei(await token.balanceOf(deployer.address))).to.equal(deployerBalance);
+
+            // Second round with actual random number from server. Let's try randomness and provenance
+            await raffle.connect(addr1).play(0);
+            await raffle.connect(addr1).play(1);
+            await raffle.connect(addr1).play(2);
+            await raffle.connect(addr2).play(3);
+            await raffle.connect(addr2).play(4);
+            await raffle.connect(addr2).play(5);
+            await raffle.connect(addr1).play(6);
+            await raffle.connect(addr1).play(7);
+            await raffle.connect(addr1).play(8);
+            await raffle.connect(addr1).play(9);
+            await raffle.connect(addr1).play(10);
+
+            let addr1PreviousBalance = fromWei(await token.balanceOf(addr1.address))
+            let addr2PreviousBalance = fromWei(await token.balanceOf(addr2.address))
+            
+            // Code snippet from server
+                previousRandomNumber = nextRandomNumber // Read firstRandomNumber from DB
+                nextRandomNumber = random256Number() // Write to DB
+                nextProvenanceHash = buf2hex(keccak256(parseInt(nextRandomNumber)))
+                await raffle.connect(deployer).endRaffle(previousRandomNumber, nextProvenanceHash);
+
+            const lastRandomNumber = await raffle.lastRandomNumber()
+            const lastWinner = lastRandomNumber % 11
+            console.log("lastRandomNumber: " + lastRandomNumber)
+            console.log("lastWinner: " + lastWinner)
+            // Provenance verification
+            expect(buf2hex(keccak256(parseInt(lastRandomNumber)))).to.equal(await raffle.lastProvenance())
+
+            // addr2 winner
+            if (lastWinner == 3 || lastWinner == 4 || lastWinner == 5) {
+                expect(fromWei(await token.balanceOf(addr2.address))).to.equal(addr2PreviousBalance + entryPrice1 * 10);
+            } else {
+                expect(fromWei(await token.balanceOf(addr1.address))).to.equal(addr1PreviousBalance + entryPrice1 * 10);
+            }
+            expect(fromWei(await token.balanceOf(raffle.address))).to.equal(0);
             deployerBalance += (entryPrice1 * percentToTeam) / 100
             expect(fromWei(await token.balanceOf(deployer.address))).to.equal(deployerBalance);
         })
