@@ -6,9 +6,9 @@ const fromWei = (num) => parseInt(ethers.utils.formatEther(num))
 
 const buf2hex = x => '0x' + x.toString('hex')
 
-const random16Number = () => {
+const random32Number = () => {
     var temp = '0b';
-    for (let i = 0; i < 16; i++)
+    for (let i = 0; i < 32; i++)
         temp += Math.round(Math.random());
 
     const randomNum = BigInt(temp);
@@ -99,7 +99,7 @@ describe("Raffle", async function() {
 
             // Code snippet from server
                 let previousRandomNumber = firstRandomNumber // Read firstRandomNumber from DB
-                let nextRandomNumber = random16Number() // Write to DB
+                let nextRandomNumber = random32Number() // Write to DB
                 let nextProvenanceHash = buf2hex(keccak256(parseInt(nextRandomNumber)))
                 console.log("nextProvenanceHash: " + nextProvenanceHash)
                 await raffle.connect(deployer).endRaffle(previousRandomNumber, nextProvenanceHash);
@@ -135,7 +135,7 @@ describe("Raffle", async function() {
 
             // Code snippet from server
                 previousRandomNumber = nextRandomNumber // Read firstRandomNumber from DB
-                nextRandomNumber = random16Number() // Write to DB
+                nextRandomNumber = random32Number() // Write to DB
                 nextProvenanceHash = buf2hex(keccak256(parseInt(nextRandomNumber)))
                 await raffle.connect(deployer).endRaffle(previousRandomNumber, nextProvenanceHash);
 
