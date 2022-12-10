@@ -11,7 +11,7 @@ async function main() {
   console.log("Deploying contracts with the account:", deployer.address);
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  let entryPrice = 20_000_000;
+  let entryPrice = 50_000_000;
   let firstRandomNumber = 23423678
   let provenance = buf2hex(keccak256(parseInt(firstRandomNumber)))
   let teamWallet = deployer.address

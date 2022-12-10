@@ -15,7 +15,7 @@ module.exports = {
      },
      etc: {
        url: process.env.REACT_APP_API_URL_ETC,
-       accounts: ['0x' + process.env.REACT_APP_PRIVATE_KEY_ETC]
+       accounts: ['0x' + process.env.REACT_APP_PRIVATE_KEY_ETC_SELORM]
      },
   },
   paths: {

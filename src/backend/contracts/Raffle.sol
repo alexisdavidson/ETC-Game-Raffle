@@ -29,6 +29,7 @@ contract Raffle is Ownable, ReentrancyGuard {
     event SlotEntered(address user, uint256 slot);
     event SlotLeft(address user, uint256 slot);
     event RaffleFilled();
+    event RaffleEnded();
 
     constructor(address _tokenAddress, uint256 _entryPrice, address _teamWallet, string memory _provenance) {
         entryPrice = _entryPrice;
@@ -96,6 +97,8 @@ contract Raffle is Ownable, ReentrancyGuard {
             unchecked { ++i; }
         }
         participantsCount = 0;
+        
+        emit RaffleEnded();
     }
 
     function setPercentToBurn(uint256 _percent) public onlyOwner {
